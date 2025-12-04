@@ -1,21 +1,9 @@
-import sys
 import os
-
-try:
-    import numpy as np
-    import matplotlib.pyplot as plt
-    import pandas as pd
-    import openpyxl
-    from openpyxl.drawing.image import Image as ExcelImage
-except ImportError as e:
-    print("\nERRO: Bibliotecas necessárias não encontradas.")
-    print(f"O Python não conseguiu carregar: {e.name}")
-    print("-" * 40)
-    print("SOLUÇÃO: Abra o terminal/cmd e execute o comando:")
-    print("    pip install numpy matplotlib pandas openpyxl")
-    print("-" * 40)
-    input("Pressione Enter para sair...")
-    sys.exit(1)
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import openpyxl
+from openpyxl.drawing.image import Image as ExcelImage
 
 def empty_lattice_bcc():
     print("Iniciando cálculos...")
@@ -47,8 +35,7 @@ def empty_lattice_bcc():
     res = 50 
     
     plot_k_path = []
-    plot_energies = []
-    
+    plot_energies = [] 
     excel_segments = {} 
     
     current_dist = 0
@@ -69,7 +56,6 @@ def empty_lattice_bcc():
         
         for alpha in local_alphas:
             k_point = start_pt + alpha * (end_pt - start_pt)
-            
             k_dist_global = current_dist + alpha * segment_dist
             plot_k_path.append(k_dist_global)
             
@@ -144,10 +130,9 @@ def empty_lattice_bcc():
             ws_graph = wb.create_sheet("Gráfico")
             
             img = ExcelImage(png_filename)
-            
             ws_graph.add_image(img, 'A1')
             
-        print(f"salvo em: {os.path.abspath(excel_filename)}")
+        print(f"Planilha salva em: {os.path.abspath(excel_filename)}")
         
     except Exception as e:
         print(f"Erro ao salvar Excel: {e}")
