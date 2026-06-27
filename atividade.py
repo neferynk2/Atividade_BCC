@@ -17,6 +17,11 @@ def empty_lattice_bcc():
     }
     path = ['G', 'H', 'P', 'G', 'N']
  
+    
+    B = np.array([[0., 1., 1.],
+                  [1., 0., 1.],
+                  [1., 1., 0.]])
+ 
     G_tables = {
         'G-H': [(0, 0, 0), (0, -1, 0), (1, 0, 0), (1, -1, -1),
                 (0, 1, 0), (0, -1, -1), (1, 1, -1), (-1, 1, 1)],
@@ -33,19 +38,18 @@ def empty_lattice_bcc():
     res = 200
     fig, ax = plt.subplots(figsize=(11, 8))
  
-    current = 0.0
-    ticks = [0.0]
-    tick_labels = [disp[path[0]]]
+    ticks = list(range(len(path)))
+    tick_labels = [disp[p] for p in path]
     excel_segments = {}
  
     for i in range(len(path) - 1):
         a, b_pt = points[path[i]], points[path[i + 1]]
         seg = path[i] + '-' + path[i + 1]
-        G = np.array(G_tables[seg], dtype=float)
-        seg_len = np.linalg.norm(b_pt - a)
+        hkl = np.array(G_tables[seg], dtype=float)
+        G = hkl @ B
  
         alphas = np.linspace(0, 1, res)
-        x_seg = current + alphas * seg_len
+        x_seg = i + alphas
         energies = np.zeros((res, len(G)))
         for j, al in enumerate(alphas):
             k = a + al * (b_pt - a)
@@ -65,19 +69,16 @@ def empty_lattice_bcc():
                         bbox=dict(boxstyle='round,pad=0.12', fc='white', ec='none', alpha=0.8))
  
         excel_segments[seg] = {'G_list': G_tables[seg], 'alphas': alphas, 'energies': energies}
-        current += seg_len
-        ticks.append(current)
-        tick_labels.append(disp[path[i + 1]])
  
     ax.set_ylim(0, 5)
-    ax.set_xlim(0, current)
+    ax.set_xlim(0, len(path) - 1)
     ax.set_ylabel(r'Energia Reduzida  $\varepsilon\,/\,[(\hbar^2/2m)(2\pi/a)^2]$', fontsize=12)
     ax.set_title('Estrutura de Bandas BCC (Rede Vazia)', fontsize=14)
     ax.set_xticks(ticks)
     ax.set_xticklabels(tick_labels, fontsize=13)
-    for loc in ticks:
+    for loc in ticks[1:-1]:
         ax.axvline(x=loc, color='black', linestyle='--', linewidth=0.8)
-    ax.grid(True, linestyle=':', alpha=0.6)
+    ax.grid(True, axis='y', linestyle=':', alpha=0.6)
  
     png = 'bandas_bcc_atividade.png'
     plt.tight_layout()
